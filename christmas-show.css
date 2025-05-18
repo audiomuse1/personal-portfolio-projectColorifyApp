@@ -1,0 +1,126 @@
+body {
+    margin: 0;
+    background-color: #0E2954;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+.back-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.christmas-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto;
+    text-align: center;
+}
+
+h1 {
+    color: white;
+    margin-bottom: 40px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.controls {
+    margin-bottom: 40px;
+}
+
+.show-button {
+    padding: 12px 25px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 25px;
+    background-color: #84A7A1;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.show-button:hover {
+    background-color: #2E8A99;
+    transform: translateY(-2px);
+}
+
+.lights-container {
+    position: relative;
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 20px auto;
+}
+
+.light-string {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.christmas-light {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 15px currentColor;
+    transition: all 0.3s ease;
+}
+
+/* Light colors */
+.red { background-color: #ff0000; box-shadow: 0 0 20px #ff0000; }
+.green { background-color: #00ff00; box-shadow: 0 0 20px #00ff00; }
+.blue { background-color: #0000ff; box-shadow: 0 0 20px #0000ff; }
+.yellow { background-color: #ffff00; box-shadow: 0 0 20px #ffff00; }
+.purple { background-color: #ff00ff; box-shadow: 0 0 20px #ff00ff; }
+
+/* Mobile styles */
+@media screen and (max-width: 768px) {
+    .christmas-container {
+        width: 95%;
+        margin: 30px auto;
+    }
+
+    .lights-container {
+        height: auto;
+        padding: 20px 0;
+    }
+
+    .light-string {
+        gap: 20px;
+        padding: 15px;
+    }
+
+    .christmas-light {
+        width: 20px;
+        height: 20px;
+    }
+
+    .controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+
+    .show-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
