@@ -1,11 +1,12 @@
 // Create lights
-const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'];
+const colors = ['#ff0000', '#00ff00', '#ffffff', '#ffff00', '#0000ff'];
 let currentAnimation = null;
+let isPlaying = true;
 
 function createLights() {
     const strings = document.querySelectorAll('.light-string');
-    strings.forEach(string => {
-        for (let i = 0; i < 8; i++) {
+    strings.forEach((string, rowIndex) => {
+        for (let i = 0; i < 10; i++) {
             const light = document.createElement('div');
             light.className = 'christmas-light';
             light.style.backgroundColor = colors[i % colors.length];
@@ -15,107 +16,103 @@ function createLights() {
     });
 }
 
-function startChristmasShow() {
-    if (currentAnimation) {
-        currentAnimation.pause();
-    }
-
+function createChristmasShow() {
     const timeline = anime.timeline({
-        easing: 'easeInOutQuad',
+        easing: 'easeInOutSine',
         loop: true
     });
 
-    // Sequence 1: Cascade effect
+    // Classic Christmas chase effect
     timeline.add({
-        targets: '.christmas-light',
-        scale: [1, 1.5],
-        brightness: [1, 2],
-        boxShadow: ['0 0 15px currentColor', '0 0 30px currentColor'],
-        duration: 800,
-        delay: anime.stagger(100, {grid: [8, 3], from: 'center'}),
-        direction: 'alternate'
-    })
-    
-    // Sequence 2: Wave pattern
-    .add({
-        targets: '.christmas-light',
-        translateY: function(el, i) {
-            return Math.sin(i * 0.35) * 15;
-        },
-        scale: [1, 1.2],
-        duration: 1000,
-        delay: anime.stagger(50, {from: 'first'}),
-        direction: 'alternate'
-    })
-    
-    // Sequence 3: Spiral dance
-    .add({
-        targets: '.christmas-light',
-        rotate: [0, 360],
+        targets: '.light-string:nth-child(odd) .christmas-light',
+        opacity: [0.3, 1],
         scale: [1, 1.3],
-        duration: 1500,
-        delay: anime.stagger(100, {grid: [8, 3], from: 'center'}),
-    })
-    
-    // Sequence 4: Random twinkle
-    .add({
-        targets: '.christmas-light',
-        opacity: function() {
-            return anime.random(0.4, 1);
-        },
-        scale: function() {
-            return anime.random(0.8, 1.4);
-        },
-        duration: 800,
-        delay: anime.stagger(100, {grid: [8, 3], from: 'random'}),
+        duration: 600,
+        delay: anime.stagger(100),
         direction: 'alternate',
-        loop: 3
-    })
-    
-    // Sequence 5: Color change
+        loop: true
+    }, 0)
+    .add({
+        targets: '.light-string:nth-child(even) .christmas-light',
+        opacity: [1, 0.3],
+        scale: [1.3, 1],
+        duration: 600,
+        delay: anime.stagger(100),
+        direction: 'alternate',
+        loop: true
+    }, 0)
+
+    // Twinkling star effect
     .add({
         targets: '.christmas-light',
-        backgroundColor: function(el, i) {
-            return colors[(i + 1) % colors.length];
-        },
-        color: function(el, i) {
-            return colors[(i + 1) % colors.length];
-        },
-        scale: [1, 1.2],
-        duration: 1000,
-        delay: anime.stagger(200),
-        direction: 'alternate'
-    });
+        boxShadow: [
+            '0 0 20px currentColor',
+            '0 0 40px currentColor',
+            '0 0 20px currentColor'
+        ],
+        duration: 1500,
+        delay: anime.stagger(200, {grid: [10, 3], from: 'random'}),
+        direction: 'alternate',
+        loop: true
+    }, 0)
 
-    currentAnimation = timeline;
+    // Christmas tree pattern
+    .add({
+        targets: '.light-string .christmas-light',
+        translateY: function(el, i) {
+            return Math.sin(i * 0.5) * 20;
+        },
+        translateX: function(el, i) {
+            return Math.cos(i * 0.5) * 20;
+        },
+        duration: 2000,
+        delay: anime.stagger(100, {from: 'center'}),
+        direction: 'alternate',
+        loop: true
+    }, 0)
+
+    // Color rotation
+    .add({
+        targets: '.christmas-light',
+        backgroundColor: function(el, i, total) {
+            return colors[(i + 1) % colors.length];
+        },
+        color: function(el, i, total) {
+            return colors[(i + 1) % colors.length];
+        },
+        duration: 2000,
+        delay: anime.stagger(200, {from: 'last'}),
+        loop: true
+    }, 0);
+
+    return timeline;
+}
+
+function toggleShow() {
+    const button = document.getElementById('startShow');
+    if (isPlaying) {
+        currentAnimation.pause();
+        button.textContent = 'Start Show';
+    } else {
+        currentAnimation.play();
+        button.textContent = 'Stop Show';
+    }
+    isPlaying = !isPlaying;
 }
 
 function resetShow() {
     if (currentAnimation) {
         currentAnimation.pause();
-        currentAnimation = null;
+        currentAnimation = createChristmasShow();
+        currentAnimation.play();
+        isPlaying = true;
+        document.getElementById('startShow').textContent = 'Stop Show';
     }
-
-    anime({
-        targets: '.christmas-light',
-        scale: 1,
-        opacity: 1,
-        rotate: 0,
-        translateX: 0,
-        translateY: 0,
-        backgroundColor: function(el, i) {
-            return colors[i % colors.length];
-        },
-        color: function(el, i) {
-            return colors[i % colors.length];
-        },
-        boxShadow: '0 0 15px currentColor',
-        duration: 500,
-        easing: 'easeOutQuad'
-    });
 }
 
-// Initialize lights and event listeners
+// Initialize and start show
 createLights();
-document.getElementById('startShow').addEventListener('click', startChristmasShow);
+currentAnimation = createChristmasShow();
+document.getElementById('startShow').textContent = 'Stop Show';
+document.getElementById('startShow').addEventListener('click', toggleShow);
 document.getElementById('resetShow').addEventListener('click', resetShow);
