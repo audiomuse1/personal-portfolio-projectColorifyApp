@@ -505,24 +505,26 @@ function stopMotion(motion) {
 
 
 // Update dropdown event handlers
-document.getElementById('motionSelect').addEventListener('change', function(e) {
+document.getElementById('motionSelect').addEventListener('change', async function(e) {
   const selectedValue = e.target.value.toLowerCase();
   
-  // Stop current animation and reset
+  // First stop current animation and reset position
   if (currentAnimation) {
     currentAnimation.pause();
     currentAnimation = null;
-    resetLightbulbs();
+    // Wait for reset to complete before starting new animation
+    await resetLightbulbs();
   }
 
   if (!selectedValue) return;
 
-  // Find and apply new animation
+  // Find and apply new animation after reset is complete
   const motionConfig = motions.find(m => m.name.toLowerCase() === selectedValue);
   if (motionConfig) {
-    requestAnimationFrame(() => {
+    // Small delay to ensure reset is visually complete
+    setTimeout(() => {
       currentAnimation = anime(motionConfig.effect());
-    });
+    }, 50);
   }
 });
 
@@ -555,18 +557,27 @@ document.getElementById('colorSelect').addEventListener('change', function(e) {
   }
 });
 
-// Reset function for lightbulbs
+// Improve reset function to ensure complete reset
 function resetLightbulbs() {
-  return anime({
-    targets: '.container__lightbulb',
-    rotate: 0,
-    scale: 1,
-    translateX: 0,
-    translateY: 0,
-    opacity: 1,
-    duration: 300,
-    easing: 'easeOutQuad'
-  }).finished;
+  return new Promise(resolve => {
+    anime({
+      targets: '.container__lightbulb',
+      rotate: 0,
+      scale: 1,
+      translateX: 0,
+      translateY: 0,
+      opacity: 1,
+      duration: 200, // Faster reset
+      easing: 'easeOutQuad',
+      complete: () => {
+        // Force reset of transform property
+        document.querySelectorAll('.container__lightbulb').forEach(bulb => {
+          bulb.style.transform = 'none';
+        });
+        resolve();
+      }
+    });
+  });
 }
 
 

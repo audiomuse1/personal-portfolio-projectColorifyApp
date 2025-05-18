@@ -197,13 +197,19 @@ body {
   /* Adjust top lightbulbs container */
   .container--lightbulbs.top-bulbs {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     width: 100%;
-    padding: 0px 10px;
+    padding: 40px 0;
     margin: 0 auto;
     overflow: visible;
-    max-width: 280px; /* Reduced to ensure proper spacing */
-    gap: 20px;
+    max-width: 280px;
+    gap: 30px;
+  }
+
+  /* Adjust individual lightbulb spacing */
+  .container__lightbulb {
+    margin: 0;
+    flex: 0 0 auto;
   }
 
   /* Control panel adjustments */
