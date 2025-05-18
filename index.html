@@ -12,48 +12,38 @@
 
 </head>
 <body>
-  <div class="header">
-    <h1>Portfolio Project - Lightbulb App</h1>
-  </div>
 
-
-<!-- Lightbulb section -->
-  <section class="container container--lightbulbs">
-  </section>
+<div class="app-container">
+  <h1 class="portfolio-title">Portfolio Project - Lightbulb App</h1>
   
+  <!-- Top lightbulbs -->
+  <div class="container--lightbulbs top-bulbs"></div>
   
-<!-- Middle Control Panel Buttons section -->
-<section class="container--middle">
- 
-  <div class="container__sidebar container__sidebar--left">
-        <!-- Left sidebar content -->
-  </div>
+  <div class="main-content">
+    <!-- Left sidebar lightbulbs -->
+    <div class="container__sidebar container__sidebar--left"></div>
     
-  <div class="container button-section">
-    <div class="container__buttons container--colors">
-        <p class="container__buttons-text">Color Buttons</p>
+    <!-- Control panel -->
+    <div class="control-panel">
+      <div class="control-section">
+        <h2>Holiday Colors</h2>
+        <div class="container--colors"></div>
+      </div>
+      
+      <div class="control-section">
+        <h2>Motion Effects</h2>
+        <div class="container--motions"></div>
+      </div>
     </div>
-
-    <div class="container__buttons container--motions">
-        <p class="container__buttons-text">Motion Buttons</p>
-    </div>
+    
+    <!-- Right sidebar lightbulbs -->
+    <div class="container__sidebar container__sidebar--right"></div>
   </div>
-
-  <div class="container__sidebar container__sidebar--right">
-      <!-- Left sidebar content -->
-  </div>
-
-</section>
-
-
-<section class="container container--lightbulbs">
-</section>
-
-
-  <script src="./bundle.js"></script>
-</body>
-
-
-
+  
+  <!-- Bottom lightbulbs -->
+  <div class="container--lightbulbs bottom-bulbs"></div>
+</div>
 
 <script src="./src/index.js"></script>
+</body>
+</html>

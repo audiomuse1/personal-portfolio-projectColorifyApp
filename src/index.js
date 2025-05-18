@@ -1,7 +1,3 @@
-
-
-
-
 //===================================================LIGHTBULB SECTION================================================//
 //====================================================================================================================//
 
@@ -164,21 +160,6 @@ function changeBackgroundColor(className, element, color) {
 
 
 
-  var colorSchemes = [
-    ["Halloween", "orange", "black"],
-    ["Christmas", "red", "green"],
-    ["Valentines", "pink", "red"],
-    ["St. Patricks Day", "#099441", "#60A830"]
-  ];
-
-  colorSchemes.forEach(scheme=> {
-    var colorSection = document.getElementsByClassName("container--colors")[0];
-    const button = createColorBtns(scheme, colorChangeEvent);
-    colorSection.append(button);
-  })
-
-
-
 
   //====================================================MOTION CHANGES=============================================//
 
@@ -294,7 +275,7 @@ function changeBackgroundColor(className, element, color) {
 
   // Check if the clicked button is already red
   if (isRed) {
-    changeBackgroundColor("button-motion", clickedButton, "#84A7A1");
+    changeBackgroundColor("button-motion", clickedButton, "blue");
     stopMotion(currentMotion);
     currentMotion = null;
     return; // Exit the function
@@ -330,12 +311,206 @@ function stopMotion(motion) {
 
 
   
-  var motions = [["Circular Motion", circularMotion], ["Square Motion", squareMotion], ["Spiral Motion", spiralMotion], ["Bounce Motion", bounceMotion], [
-    "Rotate Motion", rotateMotion], ["Blink Motion", blinkMotion], ["Shake Motion", shakeMotion]]
-  motions.forEach(scheme => {
-    var motionSection = document.getElementsByClassName("container--motions")[0];
-    const button = createMotionBtns(scheme, changeLightMotions);
-    motionSection.append(button);
-  })
+  const holidayColors = [
+    {
+      name: "Christmas",
+      colors: ['#FF6B6B', '#4CAF50', '#FF0000', '#228B22']
+    },
+    {
+      name: "Halloween",
+      colors: ['#FF6B6B', '#000000', '#FF4500']
+    },
+    {
+      name: "Valentine's",
+      colors: ['#FF69B4', '#FF1493', '#FFB6C1']
+    },
+    {
+      name: "St. Patrick's",
+      colors: ['#228B22', '#32CD32', '#90EE90']
+    },
+    {
+      name: "Autumn",
+      colors: ['#FF4500', '#FFD700', '#FF8C00']
+    },
+    {
+      name: "Winter",
+      colors: ['#87CEEB', '#E0FFFF', '#B0E0E6']
+    },
+    {
+      name: "Mardi Gras",
+      colors: ['#FF1493', '#00CED1', '#FFD700']
+    },
+    {
+      name: "4th of July",
+      colors: ['#FF0000', '#FFFFFF', '#0000FF']
+    }
+  ];
+
+  const motions = [
+    {
+      name: "Wave",
+      effect: (anime) => ({
+        targets: '.container__lightbulb',
+        translateY: [-20, 0],
+        delay: anime.stagger(100),
+        duration: 800,
+        easing: 'easeInOutSine',
+        loop: true,
+        direction: 'alternate'
+      })
+    },
+    {
+      name: "Pulse",
+      effect: (anime) => ({
+        targets: '.container__lightbulb',
+        scale: [1, 1.2],
+        opacity: [1, 0.5],
+        duration: 1000,
+        direction: 'alternate',
+        loop: true,
+        easing: 'easeInOutSine'
+      })
+    },
+    {
+      name: "Spiral",
+      effect: (anime) => ({
+        targets: '.container__lightbulb',
+        rotate: '1turn',
+        duration: 1500,
+        loop: true,
+        easing: 'linear'
+      })
+    },
+    {
+      name: "Bounce",
+      effect: (anime) => ({
+        targets: '.container__lightbulb',
+        translateY: [-30, 0],
+        duration: 800,
+        loop: true,
+        direction: 'alternate',
+        delay: anime.stagger(100),
+        easing: 'easeInOutQuad'
+      })
+    },
+    {
+      name: "Shake",
+      effect: (anime) => ({
+        targets: '.container__lightbulb',
+        translateX: ['-5px', '5px'],
+        duration: 50,
+        direction: 'alternate',
+        loop: true,
+        easing: 'linear'
+      })
+    },
+    {
+      name: "Sparkle",
+      effect: (anime) => ({
+        targets: '.container__lightbulb',
+        opacity: [0.4, 1],
+        scale: [0.8, 1.2],
+        duration: 800,
+        delay: anime.stagger(200, {from: 'center'}),
+        direction: 'alternate',
+        loop: true,
+        easing: 'easeInOutQuad'
+      })
+    }
+  ];
+
+  let currentAnimation = null;
+  let activeButton = null;
+
+  async function handleMotionClick(button, motionConfig) {
+    // If clicking active button, deactivate it
+    if (button === activeButton) {
+      button.classList.remove('active');
+      activeButton = null;
+      if (currentAnimation) {
+        currentAnimation.pause();
+        currentAnimation = null;
+      }
+      await resetLightbulbs();
+      return;
+    }
+
+    // Reset previous button immediately
+    if (activeButton) {
+      activeButton.classList.remove('active');
+    }
+
+    // Set new button immediately
+    button.classList.add('active');
+    activeButton = button;
+
+    // Handle animation
+    if (currentAnimation) {
+      currentAnimation.pause();
+      await resetLightbulbs();
+    }
+
+    currentAnimation = anime(motionConfig.effect(anime));
+  }
+
+  function resetLightbulbs() {
+    return new Promise(resolve => {
+      anime({
+        targets: '.container__lightbulb',
+        rotate: 0,
+        scale: 1,
+        translateY: 0,
+        translateX: 0,
+        opacity: 1,
+        duration: 300,
+        easing: 'easeOutQuad',
+        complete: resolve
+      });
+    });
+  }
+
+  // Initialize buttons
+  function initializeButtons() {
+    const colorContainer = document.querySelector('.container--colors');
+    const motionContainer = document.querySelector('.container--motions');
+
+    // Clear existing buttons
+    colorContainer.innerHTML = '';
+    motionContainer.innerHTML = '';
+
+    // Create color buttons
+    holidayColors.forEach(holiday => {
+      const button = document.createElement('button');
+      button.className = 'button button-color';
+      button.textContent = holiday.name;
+      button.addEventListener('click', () => changeLightColors(holiday.colors));
+      colorContainer.appendChild(button);
+    });
+
+    // Create motion buttons
+    motions.forEach(motion => {
+      const button = document.createElement('button');
+      button.className = 'button button-motion';
+      button.textContent = motion.name;
+      button.addEventListener('click', () => handleMotionClick(button, motion));
+      motionContainer.appendChild(button);
+    });
+  }
+
+  // Remove old event listeners and animations
+  document.querySelectorAll('.button-motion').forEach(btn => {
+    btn.replaceWith(btn.cloneNode(true));
+  });
+
+  // Initialize the app
+  initializeButtons();
+
+  // Remove any old animation definitions
+  [alternateSteps, circularMotion, squareMotion, spiralMotion, bounceMotion, 
+   rotateMotion, blinkMotion, shakeMotion].forEach(animation => {
+    if (animation && typeof animation.pause === 'function') {
+      animation.pause();
+    }
+  });
 
 
