@@ -110,23 +110,27 @@ function changeBackgroundColor(className, element, color) {
 //====================================================COLOR SCHEME CHANGES=============================================//
 
   //Adding event listeners for color buttons
-  function changeLightColors([...colors]) {
-    var clickedButton = event.target;
-    var isRed = clickedButton.style.backgroundColor === "blue";
-  
-    // Check if the clicked button is already red
-    if (isRed) {
-      changeBackgroundColor("button-color", clickedButton, "#84A7A1");
-      resetLightBulbColors();
-      return; // Exit the function
+  function changeLightColors(colors) {
+    // Normalize the colors input
+    let colorArray = colors;
+    if (typeof colors === 'string') {
+      const holiday = holidayColors.find(h => 
+        h.name.toLowerCase().replace(/[^a-z]/g, '') === colors.toLowerCase()
+      );
+      if (holiday) {
+        colorArray = holiday.colors;
+      } else {
+        return;
+      }
     }
-  
-    changeBackgroundColor("button-color", clickedButton, "blue");
-  
-    var lightBulbs = Array.from(document.getElementsByClassName("container__lightbulb"));
-    for (var i = 0; i < lightBulbs.length; i++) {
-      lightBulbs[i].style.borderTopColor = colors[i % colors.length];
-    }
+
+    // Apply colors to all visible lightbulbs
+    const lightBulbs = document.querySelectorAll('.container__lightbulb');
+    lightBulbs.forEach((bulb, index) => {
+      if (window.getComputedStyle(bulb).display !== 'none') {
+        bulb.style.borderTopColor = colorArray[index % colorArray.length];
+      }
+    });
   }
   
   function resetLightBulbColors() {
@@ -453,22 +457,6 @@ function stopMotion(motion) {
     currentAnimation = anime(motionConfig.effect(anime));
   }
 
-  function resetLightbulbs() {
-    return new Promise(resolve => {
-      anime({
-        targets: '.container__lightbulb',
-        rotate: 0,
-        scale: 1,
-        translateY: 0,
-        translateX: 0,
-        opacity: 1,
-        duration: 300,
-        easing: 'easeOutQuad',
-        complete: resolve
-      });
-    });
-  }
-
   // Initialize buttons
   function initializeButtons() {
     const colorContainer = document.querySelector('.container--colors');
@@ -512,5 +500,72 @@ function stopMotion(motion) {
       animation.pause();
     }
   });
+
+
+// Update dropdown event handlers
+document.getElementById('motionSelect').addEventListener('change', function(e) {
+  const selectedValue = e.target.value.toLowerCase();
+  if (!selectedValue) {
+    if (currentAnimation) {
+      currentAnimation.pause();
+      resetLightbulbs();
+    }
+    return;
+  }
+
+  // Stop current animation
+  if (currentAnimation) {
+    currentAnimation.pause();
+    resetLightbulbs();
+  }
+
+  // Find and apply new animation
+  const motionConfig = motions.find(m => m.name.toLowerCase() === selectedValue);
+  if (motionConfig) {
+    currentAnimation = anime(motionConfig.effect(anime));
+  }
+});
+
+document.getElementById('colorSelect').addEventListener('change', function(e) {
+  const selectedValue = e.target.value;
+  if (!selectedValue) {
+    resetLightBulbColors();
+    return;
+  }
+
+  // Normalize the holiday name for comparison
+  const normalizedValue = selectedValue.toLowerCase().replace(/[']/g, '').replace(/\s+/g, '');
+  
+  const holiday = holidayColors.find(h => {
+    const normalizedHoliday = h.name.toLowerCase().replace(/[']/g, '').replace(/\s+/g, '');
+    return normalizedHoliday === normalizedValue;
+  });
+
+  if (holiday) {
+    // Apply colors to visible lightbulbs only
+    const lightBulbs = document.querySelectorAll('.container__lightbulb');
+    const visibleBulbs = Array.from(lightBulbs).filter(bulb => 
+      window.getComputedStyle(bulb).display !== 'none'
+    );
+
+    visibleBulbs.forEach((bulb, index) => {
+      bulb.style.borderTopColor = holiday.colors[index % holiday.colors.length];
+    });
+  }
+});
+
+// Helper function to reset lightbulbs
+function resetLightbulbs() {
+  return anime({
+    targets: '.container__lightbulb',
+    rotate: 0,
+    scale: 1,
+    translateY: 0,
+    translateX: 0,
+    opacity: 1,
+    duration: 300,
+    easing: 'easeOutQuad'
+  });
+}
 
 

@@ -8,6 +8,12 @@ body {
   align-items: center;
 }
 
+  @media screen and (max-width: 768px) {
+    body { 
+      min-height: 0vh;
+    }
+  }
+
 .app-container {
   width: 90%;
   max-width: 1200px;
@@ -66,9 +72,6 @@ body {
 /* Button Containers */
 .container--colors,
 .container--motions {
-  background-color: #2E8A99;
-  border-radius: 10px;
-  padding: 20px;
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
@@ -140,58 +143,119 @@ body {
 }
 
 .container__lightbulb {
-  margin: 10px;
+  margin: 15px;
   background-color: transparent;
   width: 0;
   height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-top: 25px solid #1F6E8C;
+  border-left: 25px solid transparent;    /* Increased from 15px */
+  border-right: 25px solid transparent;   /* Increased from 15px */
+  border-top: 40px solid #1F6E8C;        /* Increased from 25px */
   border-radius: 50%;
   transition: all 0.3s ease;
   transform-origin: center;
   position: relative;
-  /* Add default state */
   transform: rotate(0deg) scale(1) translateY(0);
 }
 
-/* Mobile Responsive */
+/* Dropdown styles - hidden by default on desktop */
+.dropdown-select {
+  display: none;
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background-color: #84A7A1;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+/* Mobile styles */
 @media screen and (max-width: 768px) {
+  /* Basic mobile styles */
   .app-container {
-    padding: 10px;
-  }
-
-  .main-content {
-    flex-direction: column;
-    padding: 10px;
-  }
-
-  .control-panel {
-    width: 90%;
     padding: 20px;
+    width: 90%; /* Reduced from 100% to add spacing */
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+    gap: 30px;
   }
 
-  .container__sidebar {
-    position: static;
+  /* Hide all lightbulbs except first 3 */
+  .container__lightbulb:nth-child(n+4) {
+    display: none !important;
+  }
+
+  /* Adjust top lightbulbs container */
+  .container--lightbulbs.top-bulbs {
+    display: flex;
+    justify-content: space-between;
     width: 100%;
-    flex-direction: row;
-    justify-content: center;
-    height: auto;
-    margin: 10px 0;
+    padding: 40px 10px;
+    margin: 0 auto;
+    overflow: visible;
+    max-width: 280px; /* Reduced to ensure proper spacing */
+    gap: 20px;
   }
 
-  .container--lightbulbs {
+  /* Control panel adjustments */
+  .control-panel {
+    width: 85%;
+    max-width: 400px;
+    padding: 25px;
+    margin: 20px auto;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Improved dropdown styling */
+  .dropdown-select {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    background-color: #84A7A1;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 9L0 3h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    cursor: pointer;
+  }
+
+  /* Hide sidebars on mobile */
+  .container__sidebar--left,
+  .container__sidebar--right {
+    display: none;
+  }
+
+  /* Container spacing */
+  .control-section {
     padding: 0 10px;
   }
 
-  .container__lightbulb {
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 20px solid #1F6E8C;
+  /* Section title improvements */
+  .control-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 
+  /* Hide buttons, show dropdowns */
   .container--colors,
   .container--motions {
-    grid-template-columns: repeat(2, 1fr);
+    display: none !important;
+  }
+
+  .dropdown-select {
+    display: block;
   }
 }
