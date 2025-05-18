@@ -263,11 +263,12 @@ function changeBackgroundColor(className, element, color) {
   var shakeMotion = anime({
     targets: '.container__lightbulb',
     autoplay: false,
-    translateX: ['-5px', '5px', '-5px'],
-    duration: 300,
-    easing: 'easeInOutSine',
+    translateX: ['-15px', '15px'], // Increased from 5px
+    duration: 100,  // Faster duration
     direction: 'alternate',
-    loop: true
+    loop: true,
+    easing: 'easeInOutSine',
+    delay: anime.stagger(50) // Add stagger for more dynamic effect
   });
 
   var currentMotion = null;
@@ -353,7 +354,7 @@ function stopMotion(motion) {
   const motions = [
     {
       name: "Wave",
-      effect: (anime) => ({
+      effect: () => ({
         targets: '.container__lightbulb',
         translateY: [-20, 0],
         delay: anime.stagger(100),
@@ -365,7 +366,7 @@ function stopMotion(motion) {
     },
     {
       name: "Pulse",
-      effect: (anime) => ({
+      effect: () => ({
         targets: '.container__lightbulb',
         scale: [1, 1.2],
         opacity: [1, 0.5],
@@ -377,7 +378,7 @@ function stopMotion(motion) {
     },
     {
       name: "Spiral",
-      effect: (anime) => ({
+      effect: () => ({
         targets: '.container__lightbulb',
         rotate: '1turn',
         duration: 1500,
@@ -387,7 +388,7 @@ function stopMotion(motion) {
     },
     {
       name: "Bounce",
-      effect: (anime) => ({
+      effect: () => ({
         targets: '.container__lightbulb',
         translateY: [-30, 0],
         duration: 800,
@@ -399,18 +400,19 @@ function stopMotion(motion) {
     },
     {
       name: "Shake",
-      effect: (anime) => ({
+      effect: () => ({
         targets: '.container__lightbulb',
-        translateX: ['-5px', '5px'],
-        duration: 50,
+        translateX: ['-20px', '20px'],
+        duration: 100,
         direction: 'alternate',
         loop: true,
-        easing: 'linear'
+        easing: 'linear',
+        delay: anime.stagger(50)
       })
     },
     {
       name: "Sparkle",
-      effect: (anime) => ({
+      effect: () => ({
         targets: '.container__lightbulb',
         opacity: [0.4, 1],
         scale: [0.8, 1.2],
@@ -454,7 +456,7 @@ function stopMotion(motion) {
       await resetLightbulbs();
     }
 
-    currentAnimation = anime(motionConfig.effect(anime));
+    currentAnimation = anime(motionConfig.effect());
   }
 
   // Initialize buttons
@@ -505,24 +507,22 @@ function stopMotion(motion) {
 // Update dropdown event handlers
 document.getElementById('motionSelect').addEventListener('change', function(e) {
   const selectedValue = e.target.value.toLowerCase();
-  if (!selectedValue) {
-    if (currentAnimation) {
-      currentAnimation.pause();
-      resetLightbulbs();
-    }
-    return;
-  }
-
-  // Stop current animation
+  
+  // Stop current animation and reset
   if (currentAnimation) {
     currentAnimation.pause();
+    currentAnimation = null;
     resetLightbulbs();
   }
+
+  if (!selectedValue) return;
 
   // Find and apply new animation
   const motionConfig = motions.find(m => m.name.toLowerCase() === selectedValue);
   if (motionConfig) {
-    currentAnimation = anime(motionConfig.effect(anime));
+    requestAnimationFrame(() => {
+      currentAnimation = anime(motionConfig.effect());
+    });
   }
 });
 
@@ -533,16 +533,17 @@ document.getElementById('colorSelect').addEventListener('change', function(e) {
     return;
   }
 
-  // Normalize the holiday name for comparison
-  const normalizedValue = selectedValue.toLowerCase().replace(/[']/g, '').replace(/\s+/g, '');
-  
-  const holiday = holidayColors.find(h => {
-    const normalizedHoliday = h.name.toLowerCase().replace(/[']/g, '').replace(/\s+/g, '');
-    return normalizedHoliday === normalizedValue;
-  });
+  // Create a mapping for special cases
+  const colorMapping = {
+    'stpatricks': "St. Patrick's",
+    'valentines': "Valentine's",
+    '4thofjuly': "4th of July"
+  };
+
+  const holidayName = colorMapping[selectedValue] || selectedValue;
+  const holiday = holidayColors.find(h => h.name.toLowerCase() === holidayName.toLowerCase());
 
   if (holiday) {
-    // Apply colors to visible lightbulbs only
     const lightBulbs = document.querySelectorAll('.container__lightbulb');
     const visibleBulbs = Array.from(lightBulbs).filter(bulb => 
       window.getComputedStyle(bulb).display !== 'none'
@@ -554,18 +555,18 @@ document.getElementById('colorSelect').addEventListener('change', function(e) {
   }
 });
 
-// Helper function to reset lightbulbs
+// Reset function for lightbulbs
 function resetLightbulbs() {
   return anime({
     targets: '.container__lightbulb',
     rotate: 0,
     scale: 1,
-    translateY: 0,
     translateX: 0,
+    translateY: 0,
     opacity: 1,
     duration: 300,
     easing: 'easeOutQuad'
-  });
+  }).finished;
 }
 
 
